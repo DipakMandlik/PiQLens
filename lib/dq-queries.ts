@@ -1,0 +1,75 @@
+/**
+ * Common SQL queries for Data Quality metrics
+ */
+
+export const DQQueries = {
+  /**
+   * Get latest daily summary with KPIs
+   */
+  getLatestDailySummary: (days: number = 1) => `
+    SELECT 
+      *
+    FROM DATA_QUALITY_DB.DQ_METRICS.DQ_DAILY_SUMMARY
+    WHERE SUMMARY_DATE >= DATEADD(day, -${days}, CURRENT_DATE())
+      AND SUMMARY_DATE = (SELECT MAX(SUMMARY_DATE) FROM DATA_QUALITY_DB.DQ_METRICS.DQ_DAILY_SUMMARY)
+    ORDER BY SUMMARY_DATE DESC, TABLE_NAME
+  `,
+
+  /**
+   * Get aggregated KPIs
+   */
+  getAggregatedKPIs: (days: number = 1) => `
+    SELECT 
+      SUM(TOTAL_CHECKS) as TOTAL_CHECKS,
+      SUM(PASSED_CHECKS) as PASSED_CHECKS,
+      SUM(FAILED_CHECKS) as FAILED_CHECKS,
+      SUM(WARNING_CHECKS) as WARNING_CHECKS,
+      AVG(DQ_SCORE) as AVG_DQ_SCORE,
+      SUM(TOTAL_RECORDS) as TOTAL_RECORDS,
+      SUM(FAILED_RECORDS_COUNT) as FAILED_RECORDS,
+      COUNT(DISTINCT TABLE_NAME) as TOTAL_TABLES,
+      SUM(CASE WHEN IS_SLA_MET = TRUE THEN 1 ELSE 0 END) as SLA_MET_COUNT,
+      COUNT(*) as TOTAL_DATASETS
+    FROM DATA_QUALITY_DB.DQ_METRICS.DQ_DAILY_SUMMARY
+    WHERE SUMMARY_DATE >= DATEADD(day, -${days}, CURRENT_DATE())
+      AND SUMMARY_DATE = (SELECT MAX(SUMMARY_DATE) FROM DATA_QUALITY_DB.DQ_METRICS.DQ_DAILY_SUMMARY)
+  `,
+
+  /**
+   * Get latest run control
+   */
+  getLatestRunControl: () => `
+    SELECT 
+      *
+    FROM DATA_QUALITY_DB.DQ_METRICS.DQ_RUN_CONTROL
+    WHERE START_TS = (SELECT MAX(START_TS) FROM DATA_QUALITY_DB.DQ_METRICS.DQ_RUN_CONTROL)
+    LIMIT 1
+  `,
+
+  /**
+   * Get score trend
+   */
+  getScoreTrend: (days: number = 7) => `
+    SELECT 
+      SUMMARY_DATE,
+      AVG(DQ_SCORE) as AVG_SCORE,
+      AVG(PREV_DAY_SCORE) as AVG_PREV_SCORE
+    FROM DATA_QUALITY_DB.DQ_METRICS.DQ_DAILY_SUMMARY
+    WHERE SUMMARY_DATE >= DATEADD(day, -${days}, CURRENT_DATE())
+    GROUP BY SUMMARY_DATE
+    ORDER BY SUMMARY_DATE DESC
+  `,
+
+  /**
+   * Get quality grade distribution
+   */
+  getQualityGradeDistribution: () => `
+    SELECT 
+      QUALITY_GRADE,
+      COUNT(*) as COUNT
+    FROM DATA_QUALITY_DB.DQ_METRICS.DQ_DAILY_SUMMARY
+    WHERE SUMMARY_DATE = (SELECT MAX(SUMMARY_DATE) FROM DATA_QUALITY_DB.DQ_METRICS.DQ_DAILY_SUMMARY)
+    GROUP BY QUALITY_GRADE
+  `,
+};
+

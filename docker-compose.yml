@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # ───────────────────────────────────────────────────────────────
+  # Next.js Application (internal only — not exposed to host)
+  # ───────────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pi_qualytics_app
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+      - NEXT_PUBLIC_APP_NAME=${NEXT_PUBLIC_APP_NAME}
+      - NEXT_PUBLIC_BRAND_KEY=${NEXT_PUBLIC_BRAND_KEY}
+      - SNOWFLAKE_ACCOUNT=${SNOWFLAKE_ACCOUNT}
+      - SNOWFLAKE_USER=${SNOWFLAKE_USER}
+      - SNOWFLAKE_PASSWORD=${SNOWFLAKE_PASSWORD}
+      - SNOWFLAKE_WAREHOUSE=${SNOWFLAKE_WAREHOUSE}
+      - SNOWFLAKE_DATABASE=${SNOWFLAKE_DATABASE}
+      - SNOWFLAKE_SCHEMA=${SNOWFLAKE_SCHEMA}
+      - SNOWFLAKE_SESSION_TIMEZONE=${SNOWFLAKE_SESSION_TIMEZONE}
+      - ENABLE_VALKEY_CACHE=${ENABLE_VALKEY_CACHE}
+      - VALKEY_URL=${VALKEY_URL}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    env_file:
+      - .env.production
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - pi_net
+
+  # ───────────────────────────────────────────────────────────────
+  # Nginx Reverse Proxy (public entry point)
+  # Enforces trailing slash on frontend routes
+  # Passes API routes through without modification
+  # ───────────────────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: pi_qualytics_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - pi_net
+
+networks:
+  pi_net:
+    driver: bridge

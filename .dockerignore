@@ -1,0 +1,35 @@
+# Ignore node_modules resulting in smaller build context
+node_modules
+npm-debug.log
+
+# Ignore local builds
+.next
+out
+build
+
+# Ignore local git and dev tools
+.git
+.gitignore
+.github
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Ignore environment dev files
+.env*.local
+.env.development
+*.js
+*.ps1
+*.py
+*.sql
+
+# Allow exactly what is needed
+!next.config.ts
+!package.json
+!package-lock.json
+!tsconfig.json
+!components.json
+!postcss.config.mjs
+!eslint.config.mjs
+!.eslintrc.json
+!.env.production

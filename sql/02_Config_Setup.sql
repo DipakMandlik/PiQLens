@@ -1,0 +1,533 @@
+-- ============================================================================
+-- DATA QUALITY CONFIGURATION TABLES - PRODUCTION SETUP
+-- Pi-Qualytics Data Quality Platform
+-- ============================================================================
+-- Purpose: Create and populate all DQ configuration tables
+-- Prerequisites: 01_Environment_Setup.sql executed
+-- Version: 1.0.0
+-- ============================================================================
+
+USE ROLE ACCOUNTADMIN;
+USE DATABASE DATA_QUALITY_DB;
+USE SCHEMA DQ_CONFIG;
+USE WAREHOUSE DQ_ANALYTICS_WH;
+
+-- ============================================================================
+-- SECTION 1: CREATE CONFIGURATION TABLES
+-- ============================================================================
+
+-- Rule Master Table
+CREATE OR REPLACE TABLE RULE_MASTER (
+    RULE_ID                     NUMBER AUTOINCREMENT PRIMARY KEY,
+    RULE_NAME                   VARCHAR(100) NOT NULL UNIQUE,
+    RULE_TYPE                   VARCHAR(50) NOT NULL COMMENT 'COMPLETENESS | UNIQUENESS | VALIDITY | CONSISTENCY | FRESHNESS | VOLUME',
+    RULE_LEVEL                  VARCHAR(20) NOT NULL COMMENT 'COLUMN | TABLE',
+    DESCRIPTION                 VARCHAR(500) COMMENT 'Rule description',
+    IS_ACTIVE                   BOOLEAN DEFAULT TRUE,
+    CREATED_BY                  VARCHAR(100) DEFAULT CURRENT_USER(),
+    CREATED_TS                  TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+    MODIFIED_BY                 VARCHAR(100),
+    MODIFIED_TS                 TIMESTAMP_NTZ
+)
+COMMENT = 'Master table for all DQ rule definitions';
+
+-- Rule SQL Template Table
+CREATE OR REPLACE TABLE RULE_SQL_TEMPLATE (
+    TEMPLATE_ID                 NUMBER AUTOINCREMENT PRIMARY KEY,
+    RULE_ID                     NUMBER NOT NULL,
+    SQL_TEMPLATE                VARCHAR(4000) NOT NULL COMMENT 'SQL template with placeholders: {{DATABASE}}, {{SCHEMA}}, {{TABLE}}, {{COLUMN}}, {{THRESHOLD}}',
+    TEMPLATE_VERSION            NUMBER DEFAULT 1,
+    IS_ACTIVE                   BOOLEAN DEFAULT TRUE,
+    CREATED_BY                  VARCHAR(100) DEFAULT CURRENT_USER(),
+    CREATED_TS                  TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+    MODIFIED_BY                 VARCHAR(100),
+    MODIFIED_TS                 TIMESTAMP_NTZ,
+    CONSTRAINT FK_TEMPLATE_RULE FOREIGN KEY (RULE_ID) REFERENCES RULE_MASTER(RULE_ID)
+)
+COMMENT = 'SQL templates for each DQ rule with parameterized placeholders';
+
+-- Dataset Configuration Table
+CREATE OR REPLACE TABLE DATASET_CONFIG (
+    DATASET_ID                  VARCHAR(100) PRIMARY KEY,
+    SOURCE_DATABASE             VARCHAR(100) NOT NULL,
+    SOURCE_SCHEMA               VARCHAR(100) NOT NULL,
+    SOURCE_TABLE                VARCHAR(100) NOT NULL,
+    BUSINESS_DOMAIN             VARCHAR(100) COMMENT 'Business domain for weighted scoring',
+    CRITICALITY                 VARCHAR(20) DEFAULT 'MEDIUM' COMMENT 'CRITICAL | HIGH | MEDIUM | LOW',
+    IS_ACTIVE                   BOOLEAN DEFAULT TRUE,
+    CREATED_BY                  VARCHAR(100) DEFAULT CURRENT_USER(),
+    CREATED_TS                  TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+    MODIFIED_BY                 VARCHAR(100),
+    MODIFIED_TS                 TIMESTAMP_NTZ,
+    CONSTRAINT UK_DATASET UNIQUE (SOURCE_DATABASE, SOURCE_SCHEMA, SOURCE_TABLE)
+)
+COMMENT = 'Configuration for datasets to monitor with DQ checks';
+
+-- Dataset Rule Configuration Table
+CREATE OR REPLACE TABLE DATASET_RULE_CONFIG (
+    CONFIG_ID                   NUMBER AUTOINCREMENT PRIMARY KEY,
+    DATASET_ID                  VARCHAR(100) NOT NULL,
+    RULE_ID                     NUMBER NOT NULL,
+    COLUMN_NAME                 VARCHAR(100) COMMENT 'NULL for table-level rules',
+    THRESHOLD_VALUE             NUMBER(10,2) DEFAULT 90.00 COMMENT 'Pass threshold percentage (0-100)',
+    IS_ACTIVE                   BOOLEAN DEFAULT TRUE,
+    CREATED_BY                  VARCHAR(100) DEFAULT CURRENT_USER(),
+    CREATED_TS                  TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+    MODIFIED_BY                 VARCHAR(100),
+    MODIFIED_TS                 TIMESTAMP_NTZ,
+    CONSTRAINT FK_DRC_DATASET FOREIGN KEY (DATASET_ID) REFERENCES DATASET_CONFIG(DATASET_ID),
+    CONSTRAINT FK_DRC_RULE FOREIGN KEY (RULE_ID) REFERENCES RULE_MASTER(RULE_ID),
+    CONSTRAINT UK_DATASET_RULE_COLUMN UNIQUE (DATASET_ID, RULE_ID, COLUMN_NAME)
+)
+COMMENT = 'Mapping of rules to datasets and columns with thresholds';
+
+-- Weights Mapping Table
+CREATE OR REPLACE TABLE WEIGHTS_MAPPING (
+    WEIGHT_ID                   NUMBER AUTOINCREMENT PRIMARY KEY,
+    RULE_TYPE                   VARCHAR(50) NOT NULL,
+    BUSINESS_DOMAIN             VARCHAR(100) COMMENT 'NULL for default weights',
+    WEIGHT                      NUMBER(5,2) DEFAULT 1.00 COMMENT 'Weight multiplier for DQ score calculation',
+    PRIORITY                    NUMBER DEFAULT 3 COMMENT 'Execution priority (1=highest, 4=lowest)',
+    EFFECTIVE_DATE              DATE DEFAULT CURRENT_DATE(),
+    EXPIRY_DATE                 DATE COMMENT 'NULL for no expiry',
+    IS_ACTIVE                   BOOLEAN DEFAULT TRUE,
+    CREATED_BY                  VARCHAR(100) DEFAULT CURRENT_USER(),
+    CREATED_TS                  TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+)
+COMMENT = 'Weights for DQ score calculation by rule type and business domain';
+
+
+
+-- ============================================================================
+-- SECTION 2: POPULATE RULE_MASTER
+-- ============================================================================
+
+INSERT INTO RULE_MASTER (RULE_NAME, RULE_TYPE, RULE_LEVEL, DESCRIPTION, IS_ACTIVE)
+VALUES
+    -- COMPLETENESS Rules
+    ('COMPLETENESS_CHECK', 'COMPLETENESS', 'COLUMN', 'Check for NULL values in column', TRUE),
+    
+    -- UNIQUENESS Rules
+    ('UNIQUENESS_PRIMARY_KEY', 'UNIQUENESS', 'COLUMN', 'Check for duplicate values (primary key)', TRUE),
+    
+    -- VALIDITY Rules
+    ('VALIDITY_EMAIL_FORMAT', 'VALIDITY', 'COLUMN', 'Validate email format (RFC 5322 compliant)', TRUE),
+    ('VALIDITY_PHONE_FORMAT', 'VALIDITY', 'COLUMN', 'Validate phone number format (international)', TRUE),
+    ('VALIDITY_DATE_FORMAT', 'VALIDITY', 'COLUMN', 'Validate date format and parsability', TRUE),
+    ('VALIDITY_NUMERIC_FORMAT', 'VALIDITY', 'COLUMN', 'Validate numeric format and parsability', TRUE),
+    ('VALIDITY_POSITIVE_NUMBER', 'VALIDITY', 'COLUMN', 'Check for positive numbers (> 0)', TRUE),
+    ('VALIDITY_NON_NEGATIVE_NUMBER', 'VALIDITY', 'COLUMN', 'Check for non-negative numbers (>= 0)', TRUE),
+    ('VALIDITY_ALLOWED_VALUES', 'VALIDITY', 'COLUMN', 'Check against allowed value list', TRUE),
+    ('VALIDITY_DATE_RANGE', 'VALIDITY', 'COLUMN', 'Check date is within valid range (1900-present)', TRUE),
+    ('VALIDITY_COUNTRY_CODE', 'VALIDITY', 'COLUMN', 'Validate country code against standard list', TRUE),
+    ('VALIDITY_CURRENCY_CODE', 'VALIDITY', 'COLUMN', 'Validate currency code against ISO 4217', TRUE),
+    
+    -- FRESHNESS Rules
+    ('FRESHNESS_DATA_RECENCY', 'FRESHNESS', 'COLUMN', 'Check data recency against threshold days', TRUE),
+    
+    -- CONSISTENCY Rules
+    ('CONSISTENCY_FOREIGN_KEY', 'CONSISTENCY', 'COLUMN', 'Check foreign key referential integrity', TRUE),
+    
+    -- VOLUME Rules
+    ('VOLUME_ROW_COUNT_THRESHOLD', 'VOLUME', 'TABLE', 'Check minimum row count threshold', TRUE);
+
+
+
+
+
+-- ============================================================================
+-- SECTION 3: POPULATE RULE_SQL_TEMPLATE
+-- ============================================================================
+
+-- Completeness Check
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT 
+    COUNT(*) AS TOTAL_COUNT,
+    SUM(
+        CASE 
+            WHEN {{COLUMN}} IS NULL 
+                 OR LENGTH(TRIM({{COLUMN}})) = 0
+            THEN 1 
+            ELSE 0 
+        END
+    ) AS ERROR_COUNT
+FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'COMPLETENESS_CHECK';
+
+-- Uniqueness Check
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT 
+    COUNT(*) AS TOTAL_COUNT,
+    SUM(
+        CASE 
+            WHEN {{COLUMN}} IS NOT NULL
+                 AND LENGTH(TRIM({{COLUMN}})) > 0
+                 AND {{COLUMN}} IN (
+                     SELECT {{COLUMN}}
+                     FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}
+                     WHERE {{COLUMN}} IS NOT NULL
+                       AND LENGTH(TRIM({{COLUMN}})) > 0
+                     GROUP BY {{COLUMN}}
+                     HAVING COUNT(*) > 1
+                 )
+            THEN 1 
+            ELSE 0 
+        END
+    ) AS ERROR_COUNT
+FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'UNIQUENESS_PRIMARY_KEY';
+
+-- Email Format Validation
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT COUNT(*) AS TOTAL_COUNT, SUM(CASE WHEN {{COLUMN}} IS NULL THEN 0 WHEN {{COLUMN}} NOT RLIKE ''^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'' THEN 1 ELSE 0 END) AS ERROR_COUNT FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'VALIDITY_EMAIL_FORMAT';
+
+-- Phone Format Validation
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT COUNT(*) AS TOTAL_COUNT, SUM(CASE WHEN {{COLUMN}} IS NULL THEN 0 WHEN {{COLUMN}} NOT RLIKE ''^\\+?[0-9]{1,4}[-.\\s]?[0-9]{3,4}[-.\\s]?[0-9]{4}$'' THEN 1 ELSE 0 END) AS ERROR_COUNT FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'VALIDITY_PHONE_FORMAT';
+
+-- Date Format Validation
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT COUNT(*) AS TOTAL_COUNT, SUM(CASE WHEN {{COLUMN}} IS NULL THEN 0 WHEN TRY_CAST({{COLUMN}} AS DATE) IS NULL THEN 1 ELSE 0 END) AS ERROR_COUNT FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'VALIDITY_DATE_FORMAT';
+
+-- Numeric Format Validation
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT COUNT(*) AS TOTAL_COUNT, SUM(CASE WHEN {{COLUMN}} IS NULL THEN 0 WHEN TRY_CAST({{COLUMN}} AS NUMBER) IS NULL THEN 1 ELSE 0 END) AS ERROR_COUNT FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'VALIDITY_NUMERIC_FORMAT';
+
+-- Positive Number Validation
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT COUNT(*) AS TOTAL_COUNT, SUM(CASE WHEN {{COLUMN}} IS NULL THEN 0 WHEN TRY_CAST({{COLUMN}} AS NUMBER) IS NULL THEN 1 WHEN TRY_CAST({{COLUMN}} AS NUMBER) <= 0 THEN 1 ELSE 0 END) AS ERROR_COUNT FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'VALIDITY_POSITIVE_NUMBER';
+
+-- Non-Negative Number Validation
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT COUNT(*) AS TOTAL_COUNT, SUM(CASE WHEN {{COLUMN}} IS NULL THEN 0 WHEN TRY_CAST({{COLUMN}} AS NUMBER) IS NULL THEN 1 WHEN TRY_CAST({{COLUMN}} AS NUMBER) < 0 THEN 1 ELSE 0 END) AS ERROR_COUNT FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'VALIDITY_NON_NEGATIVE_NUMBER';
+
+-- Allowed Values Validation
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT COUNT(*) AS TOTAL_COUNT, SUM(CASE WHEN {{COLUMN}} IS NULL THEN 0 WHEN {{COLUMN}} NOT IN ({{ALLOWED_VALUES}}) THEN 1 ELSE 0 END) AS ERROR_COUNT FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'VALIDITY_ALLOWED_VALUES';
+
+-- Date Range Validation
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT COUNT(*) AS TOTAL_COUNT, SUM(CASE WHEN {{COLUMN}} IS NULL THEN 0 WHEN TRY_CAST({{COLUMN}} AS DATE) IS NULL THEN 1 WHEN TRY_CAST({{COLUMN}} AS DATE) > CURRENT_DATE() THEN 1 WHEN TRY_CAST({{COLUMN}} AS DATE) < ''1900-01-01'' THEN 1 ELSE 0 END) AS ERROR_COUNT FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'VALIDITY_DATE_RANGE';
+
+-- Country Code Validation
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT COUNT(*) AS TOTAL_COUNT, SUM(CASE WHEN {{COLUMN}} IS NULL THEN 0 WHEN {{COLUMN}} NOT IN (''USA'', ''Canada'', ''UK'', ''Mexico'', ''India'', ''Australia'', ''Germany'', ''France'', ''Japan'', ''China'') THEN 1 ELSE 0 END) AS ERROR_COUNT FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'VALIDITY_COUNTRY_CODE';
+
+-- Currency Code Validation
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT COUNT(*) AS TOTAL_COUNT, SUM(CASE WHEN {{COLUMN}} IS NULL THEN 0 WHEN {{COLUMN}} NOT IN (''USD'', ''EUR'', ''GBP'', ''CAD'', ''JPY'', ''AUD'', ''CHF'', ''CNY'', ''INR'', ''MXN'') THEN 1 ELSE 0 END) AS ERROR_COUNT FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'VALIDITY_CURRENCY_CODE';
+
+-- Freshness Check
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT COUNT(*) AS TOTAL_COUNT, SUM(CASE WHEN TRY_CAST({{COLUMN}} AS DATE) < DATEADD(DAY, -{{THRESHOLD}}, CURRENT_DATE()) THEN 1 ELSE 0 END) AS ERROR_COUNT FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'FRESHNESS_DATA_RECENCY';
+
+-- Foreign Key Integrity Check
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT COUNT(*) AS TOTAL_COUNT, COUNT(*) - COUNT(p.{{PARENT_KEY}}) AS ERROR_COUNT FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}} c LEFT JOIN {{PARENT_DATABASE}}.{{PARENT_SCHEMA}}.{{PARENT_TABLE}} p ON c.{{COLUMN}} = p.{{PARENT_KEY}} WHERE c.{{COLUMN}} IS NOT NULL',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'CONSISTENCY_FOREIGN_KEY';
+
+-- Volume Check
+INSERT INTO RULE_SQL_TEMPLATE (RULE_ID, SQL_TEMPLATE, TEMPLATE_VERSION, IS_ACTIVE)
+SELECT 
+    RULE_ID,
+    'SELECT COUNT(*) AS TOTAL_COUNT, CASE WHEN COUNT(*) = 0 THEN 1 ELSE 0 END AS ERROR_COUNT FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}',
+    1,
+    TRUE
+FROM RULE_MASTER WHERE RULE_NAME = 'VOLUME_ROW_COUNT_THRESHOLD';
+
+-- ============================================================================
+-- SECTION 4: POPULATE DATASET_CONFIG (BRONZE LAYER)
+-- ============================================================================
+
+INSERT INTO DATASET_CONFIG (DATASET_ID, SOURCE_DATABASE, SOURCE_SCHEMA, SOURCE_TABLE, BUSINESS_DOMAIN, CRITICALITY, IS_ACTIVE)
+VALUES
+    ('DS_Testing', 'Testing', 'Testing_Schema', 'Test_Customer', 'CUSTOMER_Testing', 'CRITICAL', TRUE);
+
+-- ============================================================================
+-- SECTION 5: POPULATE DATASET_RULE_CONFIG
+-- ============================================================================
+
+-- CUSTOMER TABLE RULES
+INSERT INTO DATASET_RULE_CONFIG (DATASET_ID, RULE_ID, COLUMN_NAME, THRESHOLD_VALUE, IS_ACTIVE)
+SELECT 'DS_Testing',1, 'ACCOUNT_ID', 100.00, TRUE FROM RULE_MASTER WHERE RULE_NAME = 'COMPLETENESS_CHECK'
+UNION ALL
+SELECT 'DS_Testing', RULE_ID, 'OPENING_BALANCE', 100.00, TRUE FROM RULE_MASTER WHERE RULE_NAME = 'VALIDITY_NUMERIC_FORMAT'
+UNION ALL
+SELECT 'DS_Testing', RULE_ID, 'EMAIL', 95.00, TRUE FROM RULE_MASTER WHERE RULE_NAME = 'VALIDITY_EMAIL_FORMAT'
+UNION ALL
+SELECT 'DS_Testing', RULE_ID, 'OPENED_DATE', 90.00, TRUE FROM RULE_MASTER WHERE RULE_NAME = 'VALIDITY_DATE_RANGE';
+
+
+-- ============================================================================
+-- SECTION 6: POPULATE WEIGHTS_MAPPING
+-- ============================================================================
+
+INSERT INTO WEIGHTS_MAPPING (RULE_TYPE, BUSINESS_DOMAIN, WEIGHT, PRIORITY, EFFECTIVE_DATE, IS_ACTIVE)
+VALUES
+    -- Customer Management Domain
+    ('COMPLETENESS', 'CUSTOMER_MANAGEMENT', 2.50, 1, CURRENT_DATE(), TRUE),
+    ('UNIQUENESS', 'CUSTOMER_MANAGEMENT', 3.00, 1, CURRENT_DATE(), TRUE),
+    ('VALIDITY', 'CUSTOMER_MANAGEMENT', 2.00, 2, CURRENT_DATE(), TRUE),
+    ('CONSISTENCY', 'CUSTOMER_MANAGEMENT', 1.50, 3, CURRENT_DATE(), TRUE),
+    ('FRESHNESS', 'CUSTOMER_MANAGEMENT', 1.00, 3, CURRENT_DATE(), TRUE),
+    ('VOLUME', 'CUSTOMER_MANAGEMENT', 1.00, 4, CURRENT_DATE(), TRUE),
+    
+    -- Account Management Domain
+    ('COMPLETENESS', 'ACCOUNT_MANAGEMENT', 2.50, 1, CURRENT_DATE(), TRUE),
+    ('UNIQUENESS', 'ACCOUNT_MANAGEMENT', 3.00, 1, CURRENT_DATE(), TRUE),
+    ('VALIDITY', 'ACCOUNT_MANAGEMENT', 2.50, 1, CURRENT_DATE(), TRUE),
+    ('CONSISTENCY', 'ACCOUNT_MANAGEMENT', 2.00, 2, CURRENT_DATE(), TRUE),
+    ('FRESHNESS', 'ACCOUNT_MANAGEMENT', 1.00, 3, CURRENT_DATE(), TRUE),
+    ('VOLUME', 'ACCOUNT_MANAGEMENT', 1.00, 4, CURRENT_DATE(), TRUE),
+    
+    -- Transaction Processing Domain
+    ('COMPLETENESS', 'TRANSACTION_PROCESSING', 3.00, 1, CURRENT_DATE(), TRUE),
+    ('UNIQUENESS', 'TRANSACTION_PROCESSING', 3.00, 1, CURRENT_DATE(), TRUE),
+    ('VALIDITY', 'TRANSACTION_PROCESSING', 2.50, 1, CURRENT_DATE(), TRUE),
+    ('CONSISTENCY', 'TRANSACTION_PROCESSING', 2.00, 2, CURRENT_DATE(), TRUE),
+    ('FRESHNESS', 'TRANSACTION_PROCESSING', 2.00, 2, CURRENT_DATE(), TRUE),
+    ('VOLUME', 'TRANSACTION_PROCESSING', 1.50, 3, CURRENT_DATE(), TRUE),
+    
+    -- Financial Reporting Domain
+    ('COMPLETENESS', 'FINANCIAL_REPORTING', 3.00, 1, CURRENT_DATE(), TRUE),
+    ('UNIQUENESS', 'FINANCIAL_REPORTING', 2.00, 2, CURRENT_DATE(), TRUE),
+    ('VALIDITY', 'FINANCIAL_REPORTING', 2.50, 1, CURRENT_DATE(), TRUE),
+    ('CONSISTENCY', 'FINANCIAL_REPORTING', 2.50, 1, CURRENT_DATE(), TRUE),
+    ('FRESHNESS', 'FINANCIAL_REPORTING', 2.50, 1, CURRENT_DATE(), TRUE),
+    ('VOLUME', 'FINANCIAL_REPORTING', 1.50, 3, CURRENT_DATE(), TRUE),
+    
+    -- Market Data Domain
+    ('COMPLETENESS', 'MARKET_DATA', 2.50, 1, CURRENT_DATE(), TRUE),
+    ('UNIQUENESS', 'MARKET_DATA', 2.00, 2, CURRENT_DATE(), TRUE),
+    ('VALIDITY', 'MARKET_DATA', 3.00, 1, CURRENT_DATE(), TRUE),
+    ('CONSISTENCY', 'MARKET_DATA', 1.50, 3, CURRENT_DATE(), TRUE),
+    ('FRESHNESS', 'MARKET_DATA', 3.00, 1, CURRENT_DATE(), TRUE),
+    ('VOLUME', 'MARKET_DATA', 1.00, 4, CURRENT_DATE(), TRUE);
+
+-- ============================================================================
+-- SECTION 7: VERIFICATION
+-- ============================================================================
+
+-- Verify row counts
+SELECT 'RULE_MASTER' AS TABLE_NAME, COUNT(*) AS ROW_COUNT FROM RULE_MASTER
+UNION ALL
+SELECT 'RULE_SQL_TEMPLATE', COUNT(*) FROM RULE_SQL_TEMPLATE
+UNION ALL
+SELECT 'DATASET_CONFIG', COUNT(*) FROM DATASET_CONFIG
+UNION ALL
+SELECT 'DATASET_RULE_CONFIG', COUNT(*) FROM DATASET_RULE_CONFIG
+UNION ALL
+SELECT 'WEIGHTS_MAPPING', COUNT(*) FROM WEIGHTS_MAPPING;
+
+-- Show configuration summary by dataset
+SELECT 
+    dc.DATASET_ID,
+    dc.SOURCE_TABLE,
+    dc.BUSINESS_DOMAIN,
+    dc.CRITICALITY,
+    COUNT(DISTINCT drc.RULE_ID) AS TOTAL_RULES,
+    COUNT(DISTINCT rm.RULE_TYPE) AS RULE_TYPES,
+    COUNT(DISTINCT drc.COLUMN_NAME) AS COLUMNS_MONITORED
+FROM DATASET_CONFIG dc
+INNER JOIN DATASET_RULE_CONFIG drc ON dc.DATASET_ID = drc.DATASET_ID
+INNER JOIN RULE_MASTER rm ON drc.RULE_ID = rm.RULE_ID
+WHERE dc.IS_ACTIVE = TRUE
+GROUP BY dc.DATASET_ID, dc.SOURCE_TABLE, dc.BUSINESS_DOMAIN, dc.CRITICALITY
+ORDER BY dc.DATASET_ID;
+
+-- Show rules by type
+SELECT 
+    RULE_TYPE,
+    COUNT(*) AS RULE_COUNT,
+    SUM(CASE WHEN IS_ACTIVE = TRUE THEN 1 ELSE 0 END) AS ACTIVE_RULES
+FROM RULE_MASTER
+GROUP BY RULE_TYPE
+ORDER BY RULE_TYPE;
+
+-- ============================================================================
+-- CONFIGURATION SETUP COMPLETE
+-- ============================================================================
+
+SELECT '=== CONFIGURATION SETUP COMPLETE ===' AS STATUS;
+SELECT 'Total Rules: ' || COUNT(*) AS INFO FROM RULE_MASTER;
+SELECT 'Total Datasets: ' || COUNT(*) AS INFO FROM DATASET_CONFIG;
+SELECT 'Total Rule Mappings: ' || COUNT(*) AS INFO FROM DATASET_RULE_CONFIG;
+
+-- ============================================================================
+-- NEXT STEPS
+-- ============================================================================
+-- 1. Review configuration: SELECT * FROM DATASET_CONFIG;
+-- 2. Test a rule: CALL sp_profile_dataset('DS_BRONZE_CUSTOMER', NULL, 'FULL');
+-- 3. Check results: SELECT * FROM DQ_CHECK_RESULTS ORDER BY CHECK_TIMESTAMP DESC LIMIT 10;
+-- ============================================================================
+
+-- ===We are setting up the dataset config with incremental columhns 
+
+ALTER TABLE DATA_QUALITY_DB.DQ_CONFIG.DATASET_CONFIG
+ADD COLUMN INCREMENTAL_ENABLED BOOLEAN DEFAULT FALSE
+COMMENT 'If TRUE, dataset supports incremental scan';
+
+ALTER TABLE DATA_QUALITY_DB.DQ_CONFIG.DATASET_CONFIG
+ADD COLUMN INCREMENTAL_COLUMN VARCHAR(100)
+COMMENT 'Column name used as watermark for incremental scan (e.g., LOAD_TIMESTAMP)';
+
+
+
+
+
+
+
+-- ===============================uNIQUNESS rECORD sOLVE ===================================
+UPDATE DATA_QUALITY_DB.DQ_CONFIG.RULE_SQL_TEMPLATE
+SET SQL_TEMPLATE = '
+SELECT 
+    COUNT(*) AS TOTAL_COUNT,
+    SUM(
+        CASE 
+            WHEN {{COLUMN}} IS NOT NULL
+                 AND LENGTH(TRIM({{COLUMN}})) > 0
+                 AND {{COLUMN}} IN (
+                     SELECT {{COLUMN}}
+                     FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}
+                     WHERE {{COLUMN}} IS NOT NULL
+                       AND LENGTH(TRIM({{COLUMN}})) > 0
+                     GROUP BY {{COLUMN}}
+                     HAVING COUNT(*) > 1
+                 )
+            THEN 1 
+            ELSE 0 
+        END
+    ) AS ERROR_COUNT
+FROM {{DATABASE}}.{{SCHEMA}}.{{TABLE}}
+'
+WHERE RULE_ID = 2 AND 18;
+
+
+
+
+-- ============================================================================
+-- SCHEMA CHANGES: Configuration Column
+-- ============================================================================
+-- Add INCREMENTAL_COLUMN to DATASET_CONFIG so each dataset declares
+-- which column (if any) should be used for incremental filtering.
+-- NULL = full scan only. NOT NULL = incremental scan using that column.
+
+ALTER TABLE DATA_QUALITY_DB.DQ_CONFIG.DATASET_CONFIG
+ADD COLUMN IF NOT EXISTS INCREMENTAL_COLUMN VARCHAR(100)
+COMMENT 'Column name used for incremental filtering (NULL = full scan only). Must be a DATE or TIMESTAMP column.';
+
+-- ============================================================================
+-- SCHEMA CHANGES: Metrics Columns
+-- ============================================================================
+-- Add SCAN_SCOPE to DQ_CHECK_RESULTS for clean FULL vs INCREMENTAL labeling.
+
+ALTER TABLE DATA_QUALITY_DB.DQ_METRICS.DQ_CHECK_RESULTS
+ADD COLUMN IF NOT EXISTS SCAN_SCOPE VARCHAR(20)
+COMMENT 'Scan scope: FULL or INCREMENTAL';
+
+ALTER TABLE DATA_QUALITY_DB.DQ_METRICS.DQ_CHECK_RESULTS
+ADD COLUMN IF NOT EXISTS SCAN_REASON VARCHAR(20)
+COMMENT 'Scan scope: FULL or INCREMENTAL';
+
+-- Add RUN_TYPE to DQ_RUN_CONTROL to distinguish FULL vs INCREMENTAL runs.
+
+ALTER TABLE DATA_QUALITY_DB.DQ_METRICS.DQ_RUN_CONTROL
+ADD COLUMN IF NOT EXISTS RUN_TYPE VARCHAR(20)
+COMMENT 'Run type: FULL or INCREMENTAL';
+
+-- Add clean incremental metrics to DQ_RUN_CONTROL.
+
+ALTER TABLE DATA_QUALITY_DB.DQ_METRICS.DQ_RUN_CONTROL
+ADD COLUMN IF NOT EXISTS ROW_LEVEL_RECORDS_PROCESSED NUMBER
+COMMENT 'Total records validated across all datasets in this run';
+
+ALTER TABLE DATA_QUALITY_DB.DQ_METRICS.DQ_RUN_CONTROL
+ADD COLUMN IF NOT EXISTS TOTAL_ROWS_IN_SCOPE NUMBER
+COMMENT 'Total rows in scope for validation (incremental window or full table)';
+
+
+
+ALTER TABLE DATA_QUALITY_DB.DQ_CONFIG.DATASET_CONFIG
+ADD COLUMN PRIMARY_KEY_COLUMN STRING;
+
+ALTER TABLE RUN_CONFIG
+ADD COLUMN EXECUTION_MODE STRING;
+
+
+SELECT * FROM TESTING.TESTING_SCHEMA.TEST_CUSTOMER;
+
+select * from data_quality_db.dq_config.dataset_config;
+
+UPDATE DATA_QUALITY_DB.DQ_CONFIG.DATASET_CONFIG
+SET INCREMENTAL_COLUMN = 'LOAD_TIMESTAMP'
+WHERE DATASET_ID = 'DS_Testing';
+
+
+SELECT CURRENT_SESSION();
