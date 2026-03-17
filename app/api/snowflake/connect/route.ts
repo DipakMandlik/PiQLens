@@ -8,15 +8,31 @@ export const runtime = 'nodejs';
 /**
  * Parse Snowflake SDK errors and return user-friendly error messages
  */
-function parseSnowflakeError(error: any): { message: string; statusCode: number } {
-  const errorCode = error?.code;
-  const errorMessage = error?.message || '';
+function parseSnowflakeError(error: unknown): { message: string; statusCode: number } {
+  const typedError = error as { code?: number; message?: string };
+  const errorCode = typedError?.code;
+  const errorMessage = typedError?.message || '';
 
   // Authentication errors
   if (errorCode === 390100 || errorCode === 390144) {
     return {
       message: 'Invalid username or password. Please check your credentials and try again.',
       statusCode: 401,
+    };
+  }
+
+  // Key-pair specific setup errors
+  if (errorMessage.includes('A password must be specified')) {
+    return {
+      message: 'Key-pair authentication failed to initialize. Verify authenticator and private key settings.',
+      statusCode: 400,
+    };
+  }
+
+  if (errorMessage.includes('Private key file not found at path')) {
+    return {
+      message: errorMessage,
+      statusCode: 400,
     };
   }
 
@@ -44,6 +60,13 @@ function parseSnowflakeError(error: any): { message: string; statusCode: number 
     };
   }
 
+  if (errorMessage.includes('specified in the connect string is not granted to this user')) {
+    return {
+      message: 'The selected role is not granted to this user. Use PIQLENS_ENGINEER_ROLE or leave role blank to use the user default role.',
+      statusCode: 403,
+    };
+  }
+
   // Incorrect username format
   if (errorMessage.includes('Incorrect username or password was specified')) {
     return {
@@ -67,7 +90,8 @@ function parseSnowflakeError(error: any): { message: string; statusCode: number 
  * {
  *   "accountUrl": "...",
  *   "username": "...",
- *   "password": "..." or "token": "...",
+ *   "password": "..." or "token": "..." or "privateKeyPath": "...",
+ *   "privateKeyPassphrase": "...", // optional
  *   "role": "..." // optional
  * }
  * 
@@ -86,6 +110,7 @@ export async function POST(request: NextRequest) {
       username: config.username,
       hasPassword: !!config.password,
       hasToken: !!config.token,
+      hasPrivateKeyPath: !!config.privateKeyPath,
       role: config.role,
     });
 
@@ -98,10 +123,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!config.username || (!config.password && !config.token)) {
-      logger.warn('Missing username or password/token');
+    const hasPasswordAuth = !!(config.password || config.token);
+    const hasKeyPairAuth = !!config.privateKeyPath;
+
+    if (!config.username || (!hasPasswordAuth && !hasKeyPairAuth)) {
+      logger.warn('Missing username or authentication method');
       return NextResponse.json(
-        { success: false, error: 'Missing required fields: username and password/token' },
+        { success: false, error: 'Missing required fields: username and (password/token or private key path)' },
         { status: 400 }
       );
     }
@@ -133,8 +161,9 @@ export async function POST(request: NextRequest) {
       message: 'Connection successful! Select warehouse, database, and schema from the sidebar to start.',
       data: result,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     const duration = Date.now() - startTime;
+    const typedError = error as { code?: number; sqlState?: string };
 
     // Parse the error to get user-friendly message and appropriate status code
     const { message, statusCode } = parseSnowflakeError(error);
@@ -142,8 +171,8 @@ export async function POST(request: NextRequest) {
     // Log the error with full details for debugging
     logger.error('Snowflake authentication failed', error, {
       endpoint: '/api/snowflake/connect',
-      errorCode: error?.code,
-      sqlState: error?.sqlState,
+      errorCode: typedError?.code,
+      sqlState: typedError?.sqlState,
       duration: `${duration}ms`,
     });
 

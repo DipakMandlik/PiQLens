@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerConfig, hasServerConfig } from '@/lib/server-config';
 
 /**
  * GET /api/snowflake/status
  * Checks if there's a stored Snowflake connection
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const isConnected = hasServerConfig();
     const config = getServerConfig();
@@ -21,13 +21,14 @@ export async function GET(request: NextRequest) {
         schema: config.schema,
         warehouse: config.warehouse,
         username: config.username ? '***' : undefined,
+        authMethod: config.privateKeyPath ? 'key-pair' : (config.password || config.token) ? 'password-or-token' : 'unknown',
       } : null,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to check connection status',
+        error: error instanceof Error ? error.message : 'Failed to check connection status',
       },
       { status: 500 }
     );

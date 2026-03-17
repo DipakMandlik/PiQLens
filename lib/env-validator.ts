@@ -11,6 +11,7 @@ export interface EnvValidationResult {
     snowflake: {
       account?: string;
       user?: string;
+      authMethod?: string;
       warehouse?: string;
       database?: string;
       schema?: string;
@@ -29,11 +30,13 @@ export interface EnvValidationResult {
 
 const REQUIRED_SNOWFLAKE_VARS = [
   'SNOWFLAKE_ACCOUNT',
-  'SNOWFLAKE_USER',
-  'SNOWFLAKE_PASSWORD'
+  'SNOWFLAKE_USER'
 ];
 
 const OPTIONAL_SNOWFLAKE_VARS = [
+  'SNOWFLAKE_PRIVATE_KEY_PATH',
+  'SNOWFLAKE_PRIVATE_KEY_PASSPHRASE',
+  'SNOWFLAKE_PUBLIC_KEY_FINGERPRINT',
   'SNOWFLAKE_WAREHOUSE',
   'SNOWFLAKE_DATABASE',
   'SNOWFLAKE_SCHEMA',
@@ -57,6 +60,12 @@ export function validateEnvironment(): EnvValidationResult {
     if (!process.env[varName]) {
       errors.push(`❌ Missing required environment variable: ${varName}`);
     }
+  }
+
+  const hasPasswordAuth = !!process.env.SNOWFLAKE_PASSWORD;
+  const hasKeyPairAuth = !!process.env.SNOWFLAKE_PRIVATE_KEY_PATH;
+  if (!hasPasswordAuth && !hasKeyPairAuth) {
+    errors.push('❌ Missing Snowflake authentication method: set SNOWFLAKE_PASSWORD or SNOWFLAKE_PRIVATE_KEY_PATH');
   }
 
   // Check optional Snowflake variables with warnings
@@ -89,6 +98,7 @@ export function validateEnvironment(): EnvValidationResult {
     snowflake: {
       account: process.env.SNOWFLAKE_ACCOUNT || '(missing)',
       user: process.env.SNOWFLAKE_USER || '(missing)',
+      authMethod: hasKeyPairAuth ? 'key-pair' : hasPasswordAuth ? 'password' : '(missing)',
       warehouse: process.env.SNOWFLAKE_WAREHOUSE || 'COMPUTE_WH',
       database: process.env.SNOWFLAKE_DATABASE || 'BANKING_DW',
       schema: process.env.SNOWFLAKE_SCHEMA || 'BRONZE',
@@ -142,6 +152,7 @@ export function logValidationResults(result: EnvValidationResult): void {
   console.log('\nSnowflake:');
   console.log(`   Account: ${result.config.snowflake.account}`);
   console.log(`   User: ${result.config.snowflake.user}`);
+  console.log(`   Auth Method: ${result.config.snowflake.authMethod}`);
   console.log(`   Warehouse: ${result.config.snowflake.warehouse}`);
   console.log(`   Database: ${result.config.snowflake.database}`);
   console.log(`   Schema: ${result.config.snowflake.schema}`);

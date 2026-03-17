@@ -23,7 +23,7 @@ interface HierarchyDatabase {
   schemas: HierarchySchema[];
 }
 
-const HIDDEN_DATABASES = new Set(['DATA_QUALITY_DB']);
+const HIDDEN_DATABASES = new Set<string>();
 
 export function Sidebar() {
   const { isConnected } = useAppStore();

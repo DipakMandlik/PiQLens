@@ -17,18 +17,6 @@ export async function GET(request: NextRequest) {
     try {
         logger.logApiRequest(endpoint, 'GET');
 
-        // Check cache first (cache for 5 minutes)
-        const cacheKey = generateCacheKey(endpoint);
-        const cachedData = cache.get(cacheKey);
-        if (cachedData) {
-            logger.logApiResponse(endpoint, true, Date.now() - startTime);
-            return NextResponse.json({
-                success: true,
-                data: cachedData,
-                metadata: { cached: true, timestamp: new Date().toISOString() },
-            });
-        }
-
         const config = getServerConfig();
         if (!config) {
             return NextResponse.json(
@@ -44,6 +32,22 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        // Check cache first (cache for 5 minutes)
+        const cacheKey = generateCacheKey(endpoint, {
+            account: config.account || config.accountUrl || 'unknown',
+            username: config.username || 'unknown',
+            role: config.role || 'default',
+        });
+        const cachedData = cache.get(cacheKey);
+        if (cachedData) {
+            logger.logApiResponse(endpoint, true, Date.now() - startTime);
+            return NextResponse.json({
+                success: true,
+                data: cachedData,
+                metadata: { cached: true, timestamp: new Date().toISOString() },
+            });
+        }
+
         const connection = await snowflakePool.getConnection(config);
         await ensureConnectionContext(connection, config);
 
@@ -56,8 +60,7 @@ export async function GET(request: NextRequest) {
         const excludedDatabases = [
             'SNOWFLAKE',
             'SNOWFLAKE_SAMPLE_DATA',
-            'SNOWFLAKE_LEARNING_DB',
-            'DATA_QUALITY_DB'
+            'SNOWFLAKE_LEARNING_DB'
         ];
 
         // Process each database

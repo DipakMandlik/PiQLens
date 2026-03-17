@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { SnowflakeConfig } from '@/lib/snowflake-types';
-import { X, Database, Lock, Globe, Layers, User } from 'lucide-react';
+import { X, Database, Lock, Globe, User } from 'lucide-react';
 import { useToast } from './ui/toast';
 
 interface ConnectionDialogProps {
@@ -11,7 +11,12 @@ interface ConnectionDialogProps {
   onClose: () => void;
 }
 
-const InputField = ({ label, icon: Icon, ...props }: any) => (
+type InputFieldProps = {
+  label: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+} & React.InputHTMLAttributes<HTMLInputElement>;
+
+const InputField = ({ label, icon: Icon, ...props }: InputFieldProps) => (
   <div className="mb-4">
     <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
     <div className="relative">
@@ -30,12 +35,19 @@ export const ConnectionDialog = ({ isOpen, onClose }: ConnectionDialogProps) => 
   const { setSnowflakeConfig, snowflakeConfig, setIsConnected } = useAppStore();
   const { showToast } = useToast();
   const [isConnecting, setIsConnecting] = useState(false);
+  const [authMode, setAuthMode] = useState<'password' | 'keypair'>('password');
   const [formData, setFormData] = useState<SnowflakeConfig>(snowflakeConfig || {
     accountUrl: '',
     username: '',
-    token: '',
-    role: 'ACCOUNTADMIN'
+    password: '',
+    role: ''
   });
+
+  React.useEffect(() => {
+    if (snowflakeConfig?.privateKeyPath) {
+      setAuthMode('keypair');
+    }
+  }, [snowflakeConfig]);
 
   if (!isOpen) return null;
 
@@ -44,16 +56,21 @@ export const ConnectionDialog = ({ isOpen, onClose }: ConnectionDialogProps) => 
     setIsConnecting(true);
 
     try {
+      const payload: SnowflakeConfig = {
+        ...formData,
+        role: (formData.role || '').trim() || undefined,
+      };
+
       // Test connection by calling the API
       const response = await fetch('/api/snowflake/connect', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      const data = await response.json() as { success?: boolean; error?: string };
 
       if (!response.ok || !data.success) {
         let errorMessage = data.error || 'Failed to connect to Snowflake';
@@ -71,16 +88,16 @@ export const ConnectionDialog = ({ isOpen, onClose }: ConnectionDialogProps) => 
       }
 
       // Save config to store
-      setSnowflakeConfig(formData);
+      setSnowflakeConfig(payload);
       setIsConnected(true);
       showToast('Successfully connected to Snowflake!', 'success');
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error
+        ? error.message
+        : 'Failed to connect to Snowflake. Please check your credentials.';
       console.error('Connection error:', error);
-      showToast(
-        error.message || 'Failed to connect to Snowflake. Please check your credentials.',
-        'error'
-      );
+      showToast(message, 'error');
     } finally {
       setIsConnecting(false);
     }
@@ -116,7 +133,7 @@ export const ConnectionDialog = ({ isOpen, onClose }: ConnectionDialogProps) => 
                 icon={Globe}
                 type="text"
                 value={formData.accountUrl}
-                onChange={(e: any) => setFormData({ ...formData, accountUrl: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, accountUrl: e.target.value })}
                 placeholder="UXEQGOS-NP89851.snowflakecomputing.com or UXEQGOS-NP89851"
                 required
               />
@@ -126,28 +143,85 @@ export const ConnectionDialog = ({ isOpen, onClose }: ConnectionDialogProps) => 
                 icon={User}
                 type="text"
                 value={formData.username}
-                onChange={(e: any) => setFormData({ ...formData, username: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, username: e.target.value })}
                 placeholder="Your Snowflake username"
                 required
               />
 
-              <InputField
-                label="Password / Token"
-                icon={Lock}
-                type="password"
-                value={formData.token}
-                onChange={(e: any) => setFormData({ ...formData, token: e.target.value })}
-                placeholder="Password or JWT/OAuth token"
-                required
-              />
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-slate-700 mb-2">Authentication Method</label>
+                <div className="flex gap-4 text-sm">
+                  <label className="inline-flex items-center gap-2 text-slate-700">
+                    <input
+                      type="radio"
+                      name="authMode"
+                      checked={authMode === 'password'}
+                      onChange={() => setAuthMode('password')}
+                    />
+                    Password / Token
+                  </label>
+                  <label className="inline-flex items-center gap-2 text-slate-700">
+                    <input
+                      type="radio"
+                      name="authMode"
+                      checked={authMode === 'keypair'}
+                      onChange={() => setAuthMode('keypair')}
+                    />
+                    Key Pair
+                  </label>
+                </div>
+              </div>
+
+              {authMode === 'password' ? (
+                <InputField
+                  label="Password / Token"
+                  icon={Lock}
+                  type="password"
+                  value={formData.password || formData.token || ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({
+                    ...formData,
+                    password: e.target.value,
+                    token: undefined,
+                    privateKeyPath: undefined,
+                    privateKeyPassphrase: undefined,
+                  })}
+                  placeholder="Password or JWT/OAuth token"
+                  required
+                />
+              ) : (
+                <>
+                  <InputField
+                    label="Private Key Path"
+                    icon={Lock}
+                    type="text"
+                    value={formData.privateKeyPath || ''}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({
+                      ...formData,
+                      privateKeyPath: e.target.value,
+                      password: undefined,
+                      token: undefined,
+                    })}
+                    placeholder="C:/path/to/piqlens_private_key_pk8.pem"
+                    required
+                  />
+                  <InputField
+                    label="Private Key Passphrase (Optional)"
+                    icon={Lock}
+                    type="password"
+                    value={formData.privateKeyPassphrase || ''}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, privateKeyPassphrase: e.target.value })}
+                    placeholder="Only if your private key is encrypted"
+                  />
+                </>
+              )}
 
               <InputField
                 label="Role (Optional)"
                 icon={User}
                 type="text"
                 value={formData.role || ''}
-                onChange={(e: any) => setFormData({ ...formData, role: e.target.value })}
-                placeholder="ACCOUNTADMIN"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, role: e.target.value })}
+                placeholder="PIQLENS_ENGINEER_ROLE (or leave blank)"
               />
 
               <div className="bg-blue-50 border border-blue-200 p-3 rounded-md mb-4 text-xs text-blue-800">

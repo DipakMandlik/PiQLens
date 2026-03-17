@@ -1,5 +1,6 @@
 // Lazy-load snowflake-sdk at runtime to avoid bundler/Turbopack issues
 let snowflake: any = null;
+import { existsSync } from 'fs';
 
 import { logger } from './logger';
 import { SnowflakeConfig, QueryResult } from './snowflake-types';
@@ -87,25 +88,45 @@ export async function createSnowflakeConnection(config: SnowflakeConfig): Promis
       return;
     }
 
-    // Use token if provided, otherwise use password
-    // For JWT/OAuth tokens, we can use them as password with SNOWFLAKE authenticator
+    // Auth options:
+    // 1) token/password flow (backward compatible)
+    // 2) private key path flow (for Snowflake key-pair auth)
     const password = config.token || config.password;
+    const hasPasswordAuth = !!password;
+    const hasKeyPairAuth = !!config.privateKeyPath;
 
-    if (!password) {
-      reject(new Error('Password or token is required.'));
+    if (!hasPasswordAuth && !hasKeyPairAuth) {
+      reject(new Error('Authentication requires either password/token or privateKeyPath.'));
       return;
     }
 
-    const connection = snowflake.createConnection({
+    const connectionOptions: any = {
       account,
       username: config.username,
-      password: password,
       warehouse: config.warehouse,
       database: config.database,
       schema: config.schema,
       role: config.role,
-      authenticator: 'SNOWFLAKE',
-    });
+    };
+
+    if (hasKeyPairAuth) {
+      const privateKeyPath = config.privateKeyPath;
+      if (!privateKeyPath || !existsSync(privateKeyPath)) {
+        reject(new Error(`Private key file not found at path: ${privateKeyPath || '(empty)'}`));
+        return;
+      }
+
+      connectionOptions.authenticator = 'SNOWFLAKE_JWT';
+      connectionOptions.privateKeyPath = privateKeyPath;
+      if (config.privateKeyPassphrase) {
+        connectionOptions.privateKeyPass = config.privateKeyPassphrase;
+      }
+    } else {
+      connectionOptions.authenticator = 'SNOWFLAKE';
+      connectionOptions.password = password;
+    }
+
+    const connection = snowflake.createConnection(connectionOptions);
 
     connection.connect((err: any, conn: any) => {
       if (err) {
@@ -304,14 +325,21 @@ export function getSnowflakeConfigFromEnv(): SnowflakeConfig {
   const account = process.env.SNOWFLAKE_ACCOUNT;
   const username = process.env.SNOWFLAKE_USER || process.env.SNOWFLAKE_USERNAME; // Support both naming conventions
   const password = process.env.SNOWFLAKE_PASSWORD;
+  const privateKeyPath = process.env.SNOWFLAKE_PRIVATE_KEY_PATH;
+  const privateKeyPassphrase = process.env.SNOWFLAKE_PRIVATE_KEY_PASSPHRASE || process.env.SNOWFLAKE_PRIVATE_KEY_PASS;
+  const publicKeyFingerprint = process.env.SNOWFLAKE_PUBLIC_KEY_FINGERPRINT;
   const warehouse = process.env.SNOWFLAKE_WAREHOUSE;
   const database = process.env.SNOWFLAKE_DATABASE;
   const schema = process.env.SNOWFLAKE_SCHEMA;
   const role = process.env.SNOWFLAKE_ROLE;
+  const token = process.env.SNOWFLAKE_TOKEN;
 
-  if (!account || !username || !password || !warehouse || !database || !schema) {
+  const hasPasswordAuth = !!(token || password);
+  const hasKeyPairAuth = !!privateKeyPath;
+
+  if (!account || !username || !warehouse || !database || !schema || (!hasPasswordAuth && !hasKeyPairAuth)) {
     throw new Error(
-      'Missing required Snowflake environment variables. Please check your .env file.'
+      'Missing required Snowflake environment variables. Set account/user/context and one auth method: password/token or private key path.'
     );
   }
 
@@ -319,6 +347,10 @@ export function getSnowflakeConfigFromEnv(): SnowflakeConfig {
     account,
     username,
     password,
+    token,
+    privateKeyPath,
+    privateKeyPassphrase,
+    publicKeyFingerprint,
     warehouse,
     database,
     schema,

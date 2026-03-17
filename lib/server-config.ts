@@ -19,11 +19,18 @@ export function getServerConfig(): SnowflakeConfig | null {
   }
 
   // Fallback to environment variables
-  if (process.env.SNOWFLAKE_ACCOUNT && process.env.SNOWFLAKE_USER && process.env.SNOWFLAKE_PASSWORD) {
+  const hasBaseConfig = !!(process.env.SNOWFLAKE_ACCOUNT && process.env.SNOWFLAKE_USER);
+  const hasPasswordAuth = !!process.env.SNOWFLAKE_PASSWORD;
+  const hasKeyPairAuth = !!process.env.SNOWFLAKE_PRIVATE_KEY_PATH;
+
+  if (hasBaseConfig && (hasPasswordAuth || hasKeyPairAuth)) {
     return {
       account: process.env.SNOWFLAKE_ACCOUNT,
       username: process.env.SNOWFLAKE_USER,
       password: process.env.SNOWFLAKE_PASSWORD,
+      privateKeyPath: process.env.SNOWFLAKE_PRIVATE_KEY_PATH,
+      privateKeyPassphrase: process.env.SNOWFLAKE_PRIVATE_KEY_PASSPHRASE || process.env.SNOWFLAKE_PRIVATE_KEY_PASS,
+      publicKeyFingerprint: process.env.SNOWFLAKE_PUBLIC_KEY_FINGERPRINT,
       warehouse: process.env.SNOWFLAKE_WAREHOUSE || 'COMPUTE_WH',
       database: process.env.SNOWFLAKE_DATABASE || 'BANKING_DW',
       schema: process.env.SNOWFLAKE_SCHEMA || 'BRONZE',

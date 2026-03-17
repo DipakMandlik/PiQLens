@@ -8851,3 +8851,166 @@
 {"level":"INFO","message":"[6:40:47.335 PM]: No config file path found. Client config will not be used."}
 {"level":"INFO","message":"[6:40:47.337 PM]: Easy Logging is disabled as no config has been found"}
 {"level":"INFO","message":"[6:40:49.243 PM]: Connection[id: 11532b3b-e5fb-4bb5-aeb6-67457d5b9c9d] - connection established successfully after 1923.69 milliseconds"}
+{"level":"INFO","message":"[11:53:25.020 AM]: Creating new connection object"}
+{"level":"INFO","message":"[11:53:25.054 AM]: Creating Connection[id: fed0db56-3495-49fe-a603-f5bfd4842a50] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: piqlens, role: ACCOUNTADMIN, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is provided, region: undefined, authenticator: SNOWFLAKE, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[11:53:25.059 AM]: Connection[id: fed0db56-3495-49fe-a603-f5bfd4842a50] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: undefined, private key pass is not provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[11:53:25.065 AM]: Connection[id: fed0db56-3495-49fe-a603-f5bfd4842a50] - connection object created successfully."}
+{"level":"INFO","message":"[11:53:25.077 AM]: Connection[id: fed0db56-3495-49fe-a603-f5bfd4842a50] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[11:53:25.080 AM]: Connection[id: fed0db56-3495-49fe-a603-f5bfd4842a50] - authentication successful using: SNOWFLAKE"}
+{"level":"INFO","message":"[11:53:25.086 AM]: Trying to initialize Easy Logging"}
+{"level":"INFO","message":"[11:53:25.114 AM]: No client config detected."}
+{"level":"INFO","message":"[11:53:25.119 AM]: No config file path found. Client config will not be used."}
+{"level":"INFO","message":"[11:53:25.124 AM]: Easy Logging is disabled as no config has been found"}
+{"level":"INFO","message":"[11:53:26.428 AM]: Connection[id: fed0db56-3495-49fe-a603-f5bfd4842a50] - connection established successfully after 1351.42 milliseconds"}
+{"level":"INFO","message":"[9:24:19.782 AM]: Creating new connection object"}
+{"level":"INFO","message":"[9:24:19.832 AM]: Creating Connection[id: c316f653-db8e-45ba-a449-7b54d91f139b] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: piqlens, role: ACCOUNTADMIN, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is provided, region: undefined, authenticator: SNOWFLAKE, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[9:24:19.839 AM]: Connection[id: c316f653-db8e-45ba-a449-7b54d91f139b] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: undefined, private key pass is not provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[9:24:19.840 AM]: Connection[id: c316f653-db8e-45ba-a449-7b54d91f139b] - connection object created successfully."}
+{"level":"INFO","message":"[9:24:19.842 AM]: Connection[id: c316f653-db8e-45ba-a449-7b54d91f139b] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[9:24:19.847 AM]: Connection[id: c316f653-db8e-45ba-a449-7b54d91f139b] - authentication successful using: SNOWFLAKE"}
+{"level":"INFO","message":"[9:24:19.853 AM]: Trying to initialize Easy Logging"}
+{"level":"INFO","message":"[9:24:19.878 AM]: No client config detected."}
+{"level":"INFO","message":"[9:24:19.879 AM]: No config file path found. Client config will not be used."}
+{"level":"INFO","message":"[9:24:19.882 AM]: Easy Logging is disabled as no config has been found"}
+{"level":"INFO","message":"[9:24:36.289 AM]: Connection[id: c316f653-db8e-45ba-a449-7b54d91f139b] - connection established successfully after 16446.86 milliseconds"}
+{"level":"INFO","message":"[11:29:34.769 AM]: Creating new connection object"}
+{"level":"INFO","message":"[11:30:12.979 AM]: Creating new connection object"}
+{"level":"INFO","message":"[11:31:01.920 AM]: Creating new connection object"}
+{"level":"INFO","message":"[11:34:22.189 AM]: Creating new connection object"}
+{"level":"INFO","message":"[11:34:22.208 AM]: Creating Connection[id: a66e883c-2322-4a5a-bcdd-ebd3d3010a3e] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: PIQLENS_APP_USER, role: ACCOUNTADMIN, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is not provided, region: undefined, authenticator: SNOWFLAKE_JWT, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[11:34:22.210 AM]: Connection[id: a66e883c-2322-4a5a-bcdd-ebd3d3010a3e] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: C:\\Users\\Dipak.Mandlik\\Downloads\\pql2\\pql2\\keys\\piqlens_private_key_pk8.pem, private key pass is provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[11:34:22.211 AM]: Connection[id: a66e883c-2322-4a5a-bcdd-ebd3d3010a3e] - connection object created successfully."}
+{"level":"INFO","message":"[11:34:22.212 AM]: Connection[id: a66e883c-2322-4a5a-bcdd-ebd3d3010a3e] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[11:34:22.219 AM]: Connection[id: a66e883c-2322-4a5a-bcdd-ebd3d3010a3e] - authentication successful using: SNOWFLAKE_JWT"}
+{"level":"INFO","message":"[11:34:22.220 AM]: Trying to initialize Easy Logging"}
+{"level":"INFO","message":"[11:34:22.229 AM]: No client config detected."}
+{"level":"INFO","message":"[11:34:22.230 AM]: No config file path found. Client config will not be used."}
+{"level":"INFO","message":"[11:34:22.231 AM]: Easy Logging is disabled as no config has been found"}
+{"level":"ERROR","message":"[11:34:38.143 AM]: Connection[id: a66e883c-2322-4a5a-bcdd-ebd3d3010a3e] - connection failed after 15930.84 milliseconds. Error: Role 'ACCOUNTADMIN' specified in the connect string is not granted to this user, or is not permitted for the credentials being used. Contact your local system administrator, or attempt to login with another role, e.g. PUBLIC."}
+{"level":"INFO","message":"[11:37:26.085 AM]: Creating new connection object"}
+{"level":"INFO","message":"[11:37:26.086 AM]: Creating Connection[id: 11bc790a-851f-4952-885c-85d4a5453857] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: PIQLENS_APP_USER, role: ACCOUNTADMIN, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is not provided, region: undefined, authenticator: SNOWFLAKE_JWT, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[11:37:26.086 AM]: Connection[id: 11bc790a-851f-4952-885c-85d4a5453857] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: C:\\Users\\Dipak.Mandlik\\Downloads\\pql2\\pql2\\keys\\piqlens_private_key_pk8.pem, private key pass is provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[11:37:26.087 AM]: Connection[id: 11bc790a-851f-4952-885c-85d4a5453857] - connection object created successfully."}
+{"level":"INFO","message":"[11:37:26.088 AM]: Connection[id: 11bc790a-851f-4952-885c-85d4a5453857] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[11:37:26.094 AM]: Connection[id: 11bc790a-851f-4952-885c-85d4a5453857] - authentication successful using: SNOWFLAKE_JWT"}
+{"level":"ERROR","message":"[11:37:26.438 AM]: Connection[id: 11bc790a-851f-4952-885c-85d4a5453857] - connection failed after 349.67 milliseconds. Error: Role 'ACCOUNTADMIN' specified in the connect string is not granted to this user, or is not permitted for the credentials being used. Contact your local system administrator, or attempt to login with another role, e.g. PUBLIC."}
+{"level":"INFO","message":"[11:37:39.988 AM]: Creating new connection object"}
+{"level":"INFO","message":"[11:37:39.989 AM]: Creating Connection[id: 280df746-06dd-4905-b5bf-acfb87c6373b] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: PIQLENS_APP_USER, role: ACCOUNTADMIN, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is not provided, region: undefined, authenticator: SNOWFLAKE_JWT, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[11:37:39.990 AM]: Connection[id: 280df746-06dd-4905-b5bf-acfb87c6373b] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: C:\\Users\\Dipak.Mandlik\\Downloads\\pql2\\pql2\\keys\\piqlens_private_key_pk8.pem, private key pass is provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[11:37:39.990 AM]: Connection[id: 280df746-06dd-4905-b5bf-acfb87c6373b] - connection object created successfully."}
+{"level":"INFO","message":"[11:37:39.991 AM]: Connection[id: 280df746-06dd-4905-b5bf-acfb87c6373b] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[11:37:39.995 AM]: Connection[id: 280df746-06dd-4905-b5bf-acfb87c6373b] - authentication successful using: SNOWFLAKE_JWT"}
+{"level":"ERROR","message":"[11:37:55.567 AM]: Connection[id: 280df746-06dd-4905-b5bf-acfb87c6373b] - connection failed after 15575.73 milliseconds. Error: Role 'ACCOUNTADMIN' specified in the connect string is not granted to this user, or is not permitted for the credentials being used. Contact your local system administrator, or attempt to login with another role, e.g. PUBLIC."}
+{"level":"INFO","message":"[11:38:31.954 AM]: Creating new connection object"}
+{"level":"INFO","message":"[11:38:31.955 AM]: Creating Connection[id: ce16e25f-e63a-44c6-b581-e4b2795cbe3d] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: PIQLENS_APP_USER, role: ACCOUNTADMIN, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is not provided, region: undefined, authenticator: SNOWFLAKE_JWT, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[11:38:31.955 AM]: Connection[id: ce16e25f-e63a-44c6-b581-e4b2795cbe3d] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: C:\\Users\\Dipak.Mandlik\\Downloads\\pql2\\pql2\\keys\\piqlens_private_key_pk8.pem, private key pass is provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[11:38:31.956 AM]: Connection[id: ce16e25f-e63a-44c6-b581-e4b2795cbe3d] - connection object created successfully."}
+{"level":"INFO","message":"[11:38:31.956 AM]: Connection[id: ce16e25f-e63a-44c6-b581-e4b2795cbe3d] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[11:38:31.961 AM]: Connection[id: ce16e25f-e63a-44c6-b581-e4b2795cbe3d] - authentication successful using: SNOWFLAKE_JWT"}
+{"level":"ERROR","message":"[11:38:32.036 AM]: Connection[id: ce16e25f-e63a-44c6-b581-e4b2795cbe3d] - connection failed after 80.27 milliseconds. Error: Role 'ACCOUNTADMIN' specified in the connect string is not granted to this user, or is not permitted for the credentials being used. Contact your local system administrator, or attempt to login with another role, e.g. PUBLIC."}
+{"level":"INFO","message":"[11:40:57.552 AM]: Creating new connection object"}
+{"level":"INFO","message":"[11:40:57.569 AM]: Creating Connection[id: 31a64bb5-91c5-4790-a958-f7d399bb699f] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: PIQLENS_APP_USER, role: PIQLENS_ENGINEER_ROLE, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is not provided, region: undefined, authenticator: SNOWFLAKE_JWT, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[11:40:57.570 AM]: Connection[id: 31a64bb5-91c5-4790-a958-f7d399bb699f] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: C:\\Users\\Dipak.Mandlik\\Downloads\\pql2\\pql2\\keys\\piqlens_private_key_pk8.pem, private key pass is provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[11:40:57.571 AM]: Connection[id: 31a64bb5-91c5-4790-a958-f7d399bb699f] - connection object created successfully."}
+{"level":"INFO","message":"[11:40:57.572 AM]: Connection[id: 31a64bb5-91c5-4790-a958-f7d399bb699f] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[11:40:57.583 AM]: Connection[id: 31a64bb5-91c5-4790-a958-f7d399bb699f] - authentication successful using: SNOWFLAKE_JWT"}
+{"level":"INFO","message":"[11:40:57.586 AM]: Trying to initialize Easy Logging"}
+{"level":"INFO","message":"[11:40:57.600 AM]: No client config detected."}
+{"level":"INFO","message":"[11:40:57.601 AM]: No config file path found. Client config will not be used."}
+{"level":"INFO","message":"[11:40:57.602 AM]: Easy Logging is disabled as no config has been found"}
+{"level":"INFO","message":"[11:41:13.238 AM]: Connection[id: 31a64bb5-91c5-4790-a958-f7d399bb699f] - connection established successfully after 15666.38 milliseconds"}
+{"level":"INFO","message":"[11:48:55.219 AM]: Creating new connection object"}
+{"level":"INFO","message":"[11:48:55.280 AM]: Creating Connection[id: 32500ce4-476e-446b-946f-8170e1193827] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: PIQLENS_APP_USER, role: PIQLENS_ENGINEER_ROLE, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is not provided, region: undefined, authenticator: SNOWFLAKE_JWT, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[11:48:55.282 AM]: Connection[id: 32500ce4-476e-446b-946f-8170e1193827] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: C:\\Users\\Dipak.Mandlik\\Downloads\\pql2\\pql2\\keys\\piqlens_private_key_pk8.pem, private key pass is provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[11:48:55.287 AM]: Connection[id: 32500ce4-476e-446b-946f-8170e1193827] - connection object created successfully."}
+{"level":"INFO","message":"[11:48:55.289 AM]: Connection[id: 32500ce4-476e-446b-946f-8170e1193827] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[11:48:55.315 AM]: Connection[id: 32500ce4-476e-446b-946f-8170e1193827] - authentication successful using: SNOWFLAKE_JWT"}
+{"level":"INFO","message":"[11:48:55.324 AM]: Trying to initialize Easy Logging"}
+{"level":"INFO","message":"[11:48:55.346 AM]: No client config detected."}
+{"level":"INFO","message":"[11:48:55.357 AM]: No config file path found. Client config will not be used."}
+{"level":"INFO","message":"[11:48:55.368 AM]: Easy Logging is disabled as no config has been found"}
+{"level":"INFO","message":"[11:49:11.386 AM]: Connection[id: 32500ce4-476e-446b-946f-8170e1193827] - connection established successfully after 16097.06 milliseconds"}
+{"level":"INFO","message":"[11:51:46.365 AM]: Creating new connection object"}
+{"level":"INFO","message":"[11:51:46.407 AM]: Creating Connection[id: f0aeb94a-d435-498a-beda-20541ed02b30] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: PIQLENS_APP_USER, role: PIQLENS_ADMIN_ROLE, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is not provided, region: undefined, authenticator: SNOWFLAKE_JWT, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[11:51:46.410 AM]: Connection[id: f0aeb94a-d435-498a-beda-20541ed02b30] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: C:\\Users\\Dipak.Mandlik\\Downloads\\pql2\\pql2\\keys\\piqlens_private_key_pk8.pem, private key pass is provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[11:51:46.412 AM]: Connection[id: f0aeb94a-d435-498a-beda-20541ed02b30] - connection object created successfully."}
+{"level":"INFO","message":"[11:51:46.416 AM]: Connection[id: f0aeb94a-d435-498a-beda-20541ed02b30] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[11:51:46.439 AM]: Connection[id: f0aeb94a-d435-498a-beda-20541ed02b30] - authentication successful using: SNOWFLAKE_JWT"}
+{"level":"INFO","message":"[11:51:46.441 AM]: Trying to initialize Easy Logging"}
+{"level":"INFO","message":"[11:51:46.451 AM]: No client config detected."}
+{"level":"INFO","message":"[11:51:46.452 AM]: No config file path found. Client config will not be used."}
+{"level":"INFO","message":"[11:51:46.453 AM]: Easy Logging is disabled as no config has been found"}
+{"level":"INFO","message":"[11:52:02.082 AM]: Connection[id: f0aeb94a-d435-498a-beda-20541ed02b30] - connection established successfully after 15666.73 milliseconds"}
+{"level":"INFO","message":"[11:59:32.926 AM]: Creating new connection object"}
+{"level":"INFO","message":"[11:59:32.946 AM]: Creating Connection[id: 234a9c40-bc3e-41c1-92c3-92ac5d18dc85] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: piqlens, role: PIQLENS_ADMIN_ROLE, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is provided, region: undefined, authenticator: SNOWFLAKE, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[11:59:32.950 AM]: Connection[id: 234a9c40-bc3e-41c1-92c3-92ac5d18dc85] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: undefined, private key pass is not provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[11:59:32.952 AM]: Connection[id: 234a9c40-bc3e-41c1-92c3-92ac5d18dc85] - connection object created successfully."}
+{"level":"INFO","message":"[11:59:32.953 AM]: Connection[id: 234a9c40-bc3e-41c1-92c3-92ac5d18dc85] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[11:59:32.961 AM]: Connection[id: 234a9c40-bc3e-41c1-92c3-92ac5d18dc85] - authentication successful using: SNOWFLAKE"}
+{"level":"INFO","message":"[11:59:32.963 AM]: Trying to initialize Easy Logging"}
+{"level":"INFO","message":"[11:59:32.974 AM]: No client config detected."}
+{"level":"INFO","message":"[11:59:32.977 AM]: No config file path found. Client config will not be used."}
+{"level":"INFO","message":"[11:59:32.979 AM]: Easy Logging is disabled as no config has been found"}
+{"level":"ERROR","message":"[11:59:49.128 AM]: Connection[id: 234a9c40-bc3e-41c1-92c3-92ac5d18dc85] - connection failed after 16174.91 milliseconds. Error: Role 'PIQLENS_ADMIN_ROLE' specified in the connect string is not granted to this user, or is not permitted for the credentials being used. Contact your local system administrator, or attempt to login with another role, e.g. PUBLIC."}
+{"level":"INFO","message":"[12:00:01.971 PM]: Creating new connection object"}
+{"level":"INFO","message":"[12:00:01.974 PM]: Creating Connection[id: 7032eed0-9e21-4c1f-90f7-84daeb293f89] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: piqlens, role: ACCOUNTADMIN, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is provided, region: undefined, authenticator: SNOWFLAKE, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[12:00:01.974 PM]: Connection[id: 7032eed0-9e21-4c1f-90f7-84daeb293f89] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: undefined, private key pass is not provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[12:00:01.975 PM]: Connection[id: 7032eed0-9e21-4c1f-90f7-84daeb293f89] - connection object created successfully."}
+{"level":"INFO","message":"[12:00:01.976 PM]: Connection[id: 7032eed0-9e21-4c1f-90f7-84daeb293f89] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[12:00:01.976 PM]: Connection[id: 7032eed0-9e21-4c1f-90f7-84daeb293f89] - authentication successful using: SNOWFLAKE"}
+{"level":"INFO","message":"[12:00:02.694 PM]: Connection[id: 7032eed0-9e21-4c1f-90f7-84daeb293f89] - connection established successfully after 718.85 milliseconds"}
+{"level":"INFO","message":"[12:04:19.793 PM]: Creating new connection object"}
+{"level":"INFO","message":"[12:04:19.811 PM]: Creating Connection[id: e2e153b9-8393-4ce2-aa54-83e03ecc95be] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: PIQLENS_APP_USER, role: PIQLENS_ADMIN_ROLE, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is not provided, region: undefined, authenticator: SNOWFLAKE_JWT, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[12:04:19.813 PM]: Connection[id: e2e153b9-8393-4ce2-aa54-83e03ecc95be] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: C:\\Users\\Dipak.Mandlik\\Downloads\\pql2\\pql2\\keys\\piqlens_private_key_pk8.pem, private key pass is provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[12:04:19.814 PM]: Connection[id: e2e153b9-8393-4ce2-aa54-83e03ecc95be] - connection object created successfully."}
+{"level":"INFO","message":"[12:04:19.815 PM]: Connection[id: e2e153b9-8393-4ce2-aa54-83e03ecc95be] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[12:04:19.824 PM]: Connection[id: e2e153b9-8393-4ce2-aa54-83e03ecc95be] - authentication successful using: SNOWFLAKE_JWT"}
+{"level":"INFO","message":"[12:04:19.825 PM]: Trying to initialize Easy Logging"}
+{"level":"INFO","message":"[12:04:19.831 PM]: No client config detected."}
+{"level":"INFO","message":"[12:04:19.832 PM]: No config file path found. Client config will not be used."}
+{"level":"INFO","message":"[12:04:19.834 PM]: Easy Logging is disabled as no config has been found"}
+{"level":"INFO","message":"[12:04:35.401 PM]: Connection[id: e2e153b9-8393-4ce2-aa54-83e03ecc95be] - connection established successfully after 15586.29 milliseconds"}
+{"level":"INFO","message":"[12:08:08.999 PM]: Creating new connection object"}
+{"level":"INFO","message":"[12:08:09.023 PM]: Creating Connection[id: 42251fb0-c283-4413-8ca8-e08a94dcb963] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: PIQLENS_APP_USER, role: PIQLENS_ADMIN_ROLE, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is not provided, region: undefined, authenticator: SNOWFLAKE_JWT, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[12:08:09.025 PM]: Connection[id: 42251fb0-c283-4413-8ca8-e08a94dcb963] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: C:\\Users\\Dipak.Mandlik\\Downloads\\pql2\\pql2\\keys\\piqlens_private_key_pk8.pem, private key pass is provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[12:08:09.027 PM]: Connection[id: 42251fb0-c283-4413-8ca8-e08a94dcb963] - connection object created successfully."}
+{"level":"INFO","message":"[12:08:09.028 PM]: Connection[id: 42251fb0-c283-4413-8ca8-e08a94dcb963] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[12:08:09.047 PM]: Connection[id: 42251fb0-c283-4413-8ca8-e08a94dcb963] - authentication successful using: SNOWFLAKE_JWT"}
+{"level":"INFO","message":"[12:08:09.048 PM]: Trying to initialize Easy Logging"}
+{"level":"INFO","message":"[12:08:09.059 PM]: No client config detected."}
+{"level":"INFO","message":"[12:08:09.065 PM]: No config file path found. Client config will not be used."}
+{"level":"INFO","message":"[12:08:09.071 PM]: Easy Logging is disabled as no config has been found"}
+{"level":"INFO","message":"[12:08:24.706 PM]: Connection[id: 42251fb0-c283-4413-8ca8-e08a94dcb963] - connection established successfully after 15678.3 milliseconds"}
+{"level":"INFO","message":"[12:19:28.415 PM]: Creating new connection object"}
+{"level":"INFO","message":"[12:19:28.436 PM]: Creating Connection[id: 882370e7-340b-4337-9f4c-a695d6172db5] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: PIQLENS_APP_USER, role: PIQLENS_ADMIN_ROLE, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is not provided, region: undefined, authenticator: SNOWFLAKE_JWT, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[12:19:28.437 PM]: Connection[id: 882370e7-340b-4337-9f4c-a695d6172db5] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: C:\\Users\\Dipak.Mandlik\\Downloads\\pql2\\pql2\\keys\\piqlens_private_key_pk8.pem, private key pass is provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[12:19:28.438 PM]: Connection[id: 882370e7-340b-4337-9f4c-a695d6172db5] - connection object created successfully."}
+{"level":"INFO","message":"[12:19:28.439 PM]: Connection[id: 882370e7-340b-4337-9f4c-a695d6172db5] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[12:19:28.447 PM]: Connection[id: 882370e7-340b-4337-9f4c-a695d6172db5] - authentication successful using: SNOWFLAKE_JWT"}
+{"level":"INFO","message":"[12:19:28.449 PM]: Trying to initialize Easy Logging"}
+{"level":"INFO","message":"[12:19:28.454 PM]: No client config detected."}
+{"level":"INFO","message":"[12:19:28.456 PM]: No config file path found. Client config will not be used."}
+{"level":"INFO","message":"[12:19:28.457 PM]: Easy Logging is disabled as no config has been found"}
+{"level":"INFO","message":"[12:19:43.983 PM]: Connection[id: 882370e7-340b-4337-9f4c-a695d6172db5] - connection established successfully after 15543.94 milliseconds"}
+{"level":"INFO","message":"[2:22:16.591 PM]: Creating new connection object"}
+{"level":"INFO","message":"[2:22:16.626 PM]: Creating Connection[id: 05c86e3f-db5b-48f0-a6c7-f7dee57e8e18] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: PIQLENS_APP_USER, role: PIQLENS_ADMIN_ROLE, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is not provided, region: undefined, authenticator: SNOWFLAKE_JWT, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[2:22:16.628 PM]: Connection[id: 05c86e3f-db5b-48f0-a6c7-f7dee57e8e18] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: C:\\Users\\Dipak.Mandlik\\Downloads\\pql2\\pql2\\keys\\piqlens_private_key_pk8.pem, private key pass is provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[2:22:16.630 PM]: Connection[id: 05c86e3f-db5b-48f0-a6c7-f7dee57e8e18] - connection object created successfully."}
+{"level":"INFO","message":"[2:22:16.632 PM]: Connection[id: 05c86e3f-db5b-48f0-a6c7-f7dee57e8e18] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[2:22:16.664 PM]: Connection[id: 05c86e3f-db5b-48f0-a6c7-f7dee57e8e18] - authentication successful using: SNOWFLAKE_JWT"}
+{"level":"INFO","message":"[2:22:16.674 PM]: Trying to initialize Easy Logging"}
+{"level":"INFO","message":"[2:22:16.693 PM]: No client config detected."}
+{"level":"INFO","message":"[2:22:16.715 PM]: No config file path found. Client config will not be used."}
+{"level":"INFO","message":"[2:22:16.730 PM]: Easy Logging is disabled as no config has been found"}
+{"level":"INFO","message":"[2:22:32.855 PM]: Connection[id: 05c86e3f-db5b-48f0-a6c7-f7dee57e8e18] - connection established successfully after 16223.34 milliseconds"}
+{"level":"INFO","message":"[2:27:44.287 PM]: Creating new connection object"}
+{"level":"INFO","message":"[2:27:44.305 PM]: Creating Connection[id: 466d37a4-9605-4209-bb6c-099ab20f29e8] with host: WRBPMWS-WQ81670.snowflakecomputing.com, account: WRBPMWS-WQ81670, accessUrl: https://WRBPMWS-WQ81670.snowflakecomputing.com, user: PIQLENS_APP_USER, role: PIQLENS_ADMIN_ROLE, database: undefined, schema: undefined, warehouse: undefined, proxy was not configured, password is not provided, region: undefined, authenticator: SNOWFLAKE_JWT, ocsp mode: FAIL_OPEN, os: win32, os version: 10.0.26100"}
+{"level":"INFO","message":"[2:27:44.307 PM]: Connection[id: 466d37a4-9605-4209-bb6c-099ab20f29e8] additional details: passcode in password is provided, passcode is not provided, private key is not provided, application: undefined, client name: snowflake-sdk, client version: 2.3.3, retry timeout: 300, private key path: C:\\Users\\Dipak.Mandlik\\Downloads\\pql2\\pql2\\keys\\piqlens_private_key_pk8.pem, private key pass is provided, client store temporary credential: false, browser response timeout: 120000"}
+{"level":"INFO","message":"[2:27:44.307 PM]: Connection[id: 466d37a4-9605-4209-bb6c-099ab20f29e8] - connection object created successfully."}
+{"level":"INFO","message":"[2:27:44.308 PM]: Connection[id: 466d37a4-9605-4209-bb6c-099ab20f29e8] - connecting. Associated Snowflake domain: GLOBAL"}
+{"level":"INFO","message":"[2:27:44.318 PM]: Connection[id: 466d37a4-9605-4209-bb6c-099ab20f29e8] - authentication successful using: SNOWFLAKE_JWT"}
+{"level":"INFO","message":"[2:27:44.319 PM]: Trying to initialize Easy Logging"}
+{"level":"INFO","message":"[2:27:44.337 PM]: No client config detected."}
+{"level":"INFO","message":"[2:27:44.337 PM]: No config file path found. Client config will not be used."}
+{"level":"INFO","message":"[2:27:44.338 PM]: Easy Logging is disabled as no config has been found"}
+{"level":"INFO","message":"[2:27:59.893 PM]: Connection[id: 466d37a4-9605-4209-bb6c-099ab20f29e8] - connection established successfully after 15583.86 milliseconds"}

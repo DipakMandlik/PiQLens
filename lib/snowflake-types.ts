@@ -4,6 +4,9 @@ export interface SnowflakeConfig {
     username: string;
     password?: string;
     token?: string; // JWT/OAuth token
+    privateKeyPath?: string;
+    privateKeyPassphrase?: string;
+    publicKeyFingerprint?: string;
     warehouse?: string; // Optional - can be set later
     database?: string;  // Optional - can be set later
     schema?: string;    // Optional - can be set later
