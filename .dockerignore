@@ -1,35 +1,36 @@
-# Ignore node_modules resulting in smaller build context
+# Dependency and build output
 node_modules
-npm-debug.log
-
-# Ignore local builds
 .next
 out
 build
+coverage
 
-# Ignore local git and dev tools
+# Git and local metadata
 .git
-.gitignore
 .github
-Dockerfile
-docker-compose.yml
-.dockerignore
+.vscode
+.idea
 
-# Ignore environment dev files
-.env*.local
-.env.development
-*.js
-*.ps1
-*.py
-*.sql
+# Logs and runtime artifacts
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+snowflake.log
 
-# Allow exactly what is needed
-!next.config.ts
-!package.json
-!package-lock.json
-!tsconfig.json
-!components.json
-!postcss.config.mjs
-!eslint.config.mjs
-!.eslintrc.json
-!.env.production
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+keys/*
+!keys/.gitkeep
+!keys/README.md
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+
+# Local caches/tools
+.agent/
+.gemini/
+antigravity/.venv/

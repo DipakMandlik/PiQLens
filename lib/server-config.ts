@@ -24,9 +24,16 @@ export function getServerConfig(): SnowflakeConfig | null {
   const hasKeyPairAuth = !!process.env.SNOWFLAKE_PRIVATE_KEY_PATH;
 
   if (hasBaseConfig && (hasPasswordAuth || hasKeyPairAuth)) {
+    const account = process.env.SNOWFLAKE_ACCOUNT;
+    const username = process.env.SNOWFLAKE_USER;
+
+    if (!account || !username) {
+      return null;
+    }
+
     return {
-      account: process.env.SNOWFLAKE_ACCOUNT,
-      username: process.env.SNOWFLAKE_USER,
+      account,
+      username,
       password: process.env.SNOWFLAKE_PASSWORD,
       privateKeyPath: process.env.SNOWFLAKE_PRIVATE_KEY_PATH,
       privateKeyPassphrase: process.env.SNOWFLAKE_PRIVATE_KEY_PASSPHRASE || process.env.SNOWFLAKE_PRIVATE_KEY_PASS,
